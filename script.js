@@ -48,6 +48,7 @@ const questions = [
 ];
 
 // Variables
+let wheelNumbers = [];
 let currentQuestion = 0;
 let totalScore = 0;
 let maxPossibleScore = 0;
@@ -388,15 +389,16 @@ function createWheel(healthPercentage, currentAge = 60) {
     const centerX = 150;
     const centerY = 150;
     const radius = 140;
-    var wheelNumbers = getRandomAgeNumbers(healthPercentage, currentAge);
-    const segments = wheelNumbers.length;
+    var _wheelNumbers = getRandomAgeNumbers(healthPercentage, currentAge);
+    wheelNumbers = _wheelNumbers
+    const segments = _wheelNumbers.length;
     const anglePerSegment = 360 / segments;
 
     // Clear existing content
     svg.innerHTML = '';
 
     // Create segments
-    for (let i = 0; i < segments; i++) {
+    wheelNumbers.forEach((num, i) => {
         const startAngle = i * anglePerSegment;
         const endAngle = (i + 1) * anglePerSegment;
 
@@ -414,7 +416,7 @@ function createWheel(healthPercentage, currentAge = 60) {
         const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
 
         // Determine color based on number value
-        const number = wheelNumbers[i];
+        const number = num;
         let color;
         if (number >= 10) color = '#10b981'; // green-500
         else if (number >= 5) color = '#84cc16'; // lime-500
@@ -448,15 +450,25 @@ function createWheel(healthPercentage, currentAge = 60) {
         text.setAttribute('transform', `rotate(${textAngle}, ${textX}, ${textY})`);
         text.textContent = number > 0 ? `+${number}` : number.toString();
         svg.appendChild(text);
-    }
+    })
 }
 
 // Spin button handler
 document.getElementById('spin-button').addEventListener('click', function () {
+    if (isSpinning) return;
+
+    isSpinning = true;
     this.disabled = true;
     this.textContent = 'Spinning...';
+    this.classList.add('opacity-50');
 
-    // Random spin (3-8 full rotations plus random position)
+    // // Random spin (3-8 full rotations plus random position)
+    const sections = wheelNumbers.length;
+    const sectionAngle = 360 / sections;
+    // const randomSection = Math.floor(Math.random() * sections);
+    // const extraDegrees = randomSection * sectionAngle;
+    // const totalDegrees = 1800 + extraDegrees + Math.floor(Math.random() * sectionAngle);
+
     const spins = 3 + Math.random() * 5;
     const finalAngle = Math.random() * 360;
     const totalRotation = spins * 360 + finalAngle;
@@ -471,16 +483,41 @@ document.getElementById('spin-button').addEventListener('click', function () {
     wheelSvg.style.setProperty('--spin-degrees', `${totalRotation}deg`);
     wheelSvg.classList.add('spin-animation');
 
-    // Show result after animation
-    setTimeout(() => {
-        document.getElementById('landedNumber').textContent = selectedNumber > 0 ? `+${selectedNumber}` : selectedNumber;
-        document.getElementById('spinResult').classList.remove('hidden');
+    // // Show result after animation
+    // setTimeout(() => {
+    //     document.getElementById('landedNumber').textContent = selectedNumber > 0 ? `+${selectedNumber}` : selectedNumber;
+    //     document.getElementById('spinResult').classList.remove('hidden');
 
-        // Show continue button
+    //     // Show continue button
+    //     setTimeout(() => {
+    //         showResults();
+    //     }, 1500);
+    // }, 3000);
+
+
+    // Get the selected value after spinning
+    setTimeout(() => {
+        // document.getElementById('landedNumber').textContent = selectedNumber > 0 ? `+${selectedNumber}` : selectedNumber;
+        // document.getElementById('spinResult').classList.remove('hidden');
+
+        // Calculate which section is at the top (opposite of the rotation)
+        // const normalizedDegrees = totalDegrees % 360;
+        const normalizedDegrees = totalRotation % 360;
+        const sectionIndex = Math.floor((360 - normalizedDegrees) / sectionAngle) % sections;
+
+        // Get all sections and find the selected one
+        // const allSections = document.querySelectorAll('.wheel-section');
+        // console.log(allSections)
+        // console.log(allSections[sectionIndex])
+        // selectedValue = parseInt(allSections[sectionIndex].dataset.value);
+        selectedValue = wheelNumbers[sectionIndex];
+
+        // Show results after a short delay
         setTimeout(() => {
             showResults();
-        }, 1500);
-    }, 3000);
+            updateProgress(100);
+        }, 500);
+    }, 5000); // Match the CSS transition duration
 });
 
 // Restart the quiz
