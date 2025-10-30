@@ -163,79 +163,92 @@ function showWheel() {
     createWheel(healthPercentage);
 }
 
-// Create wheel with sections based on health score
-function createWheel(healthPercentage) {
-    wheel.innerHTML = '';
-
+function getRandomAgeNumbers(healthPercentage, currentAge) {
     // Define wheel sections based on health score
-    let sections = [];
-
-    if (healthPercentage >= 80) {
-        // Very healthy - mostly positive values, with median > 1
-        sections = [+15, +8, +4, +10, +2, -1, +6, +1];
-    } else if (healthPercentage >= 60) {
-        // Healthy - mix of positive and some negative, with median = 1
-        sections = [+7, +3, -2, +5, +1, -3, +4, 0];
-    } else if (healthPercentage >= 40) {
-        // Average - balanced mix, with median = 1
-        sections = [+5, -3, +6, -4, +2, -1, +3, 0];
-    } else if (healthPercentage >= 20) {
-        // Unhealthy - more negative values, with median < 1
-        sections = [-3, +2, -5, +3, -6, +1, -4, 0];
-    } else {
-        // Very unhealthy - mostly negative values, with median < 0
-        sections = [-7, -5, -6, +1, -4, -2, +2, -3];
+    var baseAge = 75;
+    if (currentAge > baseAge) {
+        baseAge = currentAge;
+        healthPercentage -= 20;
     }
 
-    // Create wheel sections
-    const sectionCount = sections.length;
-    const sectionAngle = 360 / sectionCount;
+    let offsets = [];
+    if (healthPercentage >= 80) {
+        // Very healthy - mostly positive values, with median > 1
+        offsets = [-1, 0, +2, +4, +6, +8, +10, +15];
+    } else if (healthPercentage >= 60) {
+        // Healthy - mix of positive and some negative, with median = 1
+        offsets = [-3, -2, 0, +1, +3, +4, +5, +7];
+    } else if (healthPercentage >= 40) {
+        // Average - balanced mix, with median = 1
+        offsets = [-4, -3, -1, 0, +2, +3, +5, +6];
+    } else if (healthPercentage >= 20) {
+        // Unhealthy - more negative values, with median < 1
+        offsets = [-5, -4, -3, -2, 0, +1, +2, +3];
+    } else {
+        // Very unhealthy - mostly negative values, with median < 0
+        offsets = [-7, -6, -5, -4, -3, -2, +1, +2];
+    }
 
-    sections.forEach((value, index) => {
-        // Create section with proper clip path
-        const section = document.createElement('div');
-        section.className = 'wheel-section';
-        section.dataset.value = value;
+    var numbers = offsets.map(offset => Math.max(offset + baseAge, currentAge));
 
-        // Calculate rotation for this section
-        const rotation = index * sectionAngle;
-        section.style.transform = `rotate(${rotation}deg)`;
-
-        // Set color based on value
-        if (value >= 4) {
-            section.style.backgroundColor = '#A8E6CF'; // good
-        } else if (value >= 0) {
-            section.style.backgroundColor = '#D3D3D3'; // neutral
-        } else {
-            section.style.backgroundColor = '#FF8B94'; // bad
-        }
-
-        // Add text label
-        const text = document.createElement('div');
-        text.className = 'wheel-text';
-        text.textContent = value > 0 ? `+${value}` : value;
-
-        // Position text in the middle of the section, pointing toward center
-        const labelAngle = rotation + (sectionAngle / 2);
-        const radians = (labelAngle) * (Math.PI / 180);
-        const radius = 160; // Wheel radius
-        const textDistance = radius * 0.7; // Position text at 70% from center
-
-        const x = Math.cos(radians) * textDistance;
-        const y = Math.sin(radians) * textDistance;
-
-        // Position text and rotate it to point toward center
-        text.style.left = `${radius + x}px`;
-        text.style.top = `${radius + y}px`;
-        text.style.transform = `translate(-50%, -50%) rotate(${labelAngle + 90}deg)`;
-
-        wheel.appendChild(section);
-        wheel.appendChild(text);
-    });
-
-    // Add spin event listener
-    spinButton.addEventListener('click', spinWheel);
+    return numbers;
 }
+
+// // Create wheel with sections based on health score
+// function createWheel(healthPercentage, currentAge = 60) {
+//     wheel.innerHTML = '';
+
+//     var sections = getRandomAgeNumbers(healthPercentage, currentAge);
+
+//     // Create wheel sections
+//     const sectionCount = sections.length;
+//     const sectionAngle = 360 / sectionCount;
+
+//     sections.forEach((value, index) => {
+//         // Create section with proper clip path
+//         const section = document.createElement('div');
+//         section.className = 'wheel-section';
+//         section.dataset.value = value;
+
+//         // Calculate rotation for this section
+//         const rotation = index * sectionAngle;
+//         section.style.transform = `rotate(${rotation}deg)`;
+
+//         // Set color based on value
+//         if (value >= 4) {
+//             section.style.backgroundColor = '#A8E6CF'; // good
+//         } else if (value >= 0) {
+//             section.style.backgroundColor = '#D3D3D3'; // neutral
+//         } else {
+//             section.style.backgroundColor = '#FF8B94'; // bad
+//         }
+
+//         // Add text label
+//         const text = document.createElement('div');
+//         text.className = 'wheel-text';
+//         text.textContent = value > 0 ? `+${value}` : value;
+
+//         // Position text in the middle of the section, pointing toward center
+//         const labelAngle = rotation + (sectionAngle / 2);
+//         const radians = (labelAngle) * (Math.PI / 180);
+//         const radius = 160; // Wheel radius
+//         const textDistance = radius * 0.7; // Position text at 70% from center
+
+//         const x = Math.cos(radians) * textDistance;
+//         const y = Math.sin(radians) * textDistance;
+
+//         // Position text and rotate it to point toward center
+//         text.style.left = `${radius + x}px`;
+//         text.style.top = `${radius + y}px`;
+//         text.style.transform = `translate(-50%, -50%) rotate(${labelAngle + 90}deg)`;
+
+//         wheel.appendChild(section);
+//         wheel.appendChild(text);
+//     });
+
+//     // Add spin event listener
+//     spinButton.addEventListener('click', spinWheel);
+// }
 
 // Spin the wheel
 function spinWheel() {
@@ -369,6 +382,106 @@ function createConfetti() {
         }, 5000);
     }
 }
+
+function createWheel(healthPercentage, currentAge = 60) {
+    const svg = document.getElementById('wheelSvg');
+    const centerX = 150;
+    const centerY = 150;
+    const radius = 140;
+    var wheelNumbers = getRandomAgeNumbers(healthPercentage, currentAge);
+    const segments = wheelNumbers.length;
+    const anglePerSegment = 360 / segments;
+
+    // Clear existing content
+    svg.innerHTML = '';
+
+    // Create segments
+    for (let i = 0; i < segments; i++) {
+        const startAngle = i * anglePerSegment;
+        const endAngle = (i + 1) * anglePerSegment;
+
+        // Create path for segment
+        const startAngleRad = (startAngle - 90) * Math.PI / 180;
+        const endAngleRad = (endAngle - 90) * Math.PI / 180;
+
+        const x1 = centerX + radius * Math.cos(startAngleRad);
+        const y1 = centerY + radius * Math.sin(startAngleRad);
+        const x2 = centerX + radius * Math.cos(endAngleRad);
+        const y2 = centerY + radius * Math.sin(endAngleRad);
+
+        const largeArcFlag = anglePerSegment > 180 ? 1 : 0;
+
+        const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+        // Determine color based on number value
+        const number = wheelNumbers[i];
+        let color;
+        if (number >= 10) color = '#10b981'; // green-500
+        else if (number >= 5) color = '#84cc16'; // lime-500
+        else if (number >= 0) color = '#eab308'; // yellow-500
+        else if (number >= -5) color = '#f97316'; // orange-500
+        else color = '#ef4444'; // red-500
+
+        // Create segment path
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill', color);
+        path.setAttribute('stroke', '#ffffff');
+        path.setAttribute('stroke-width', '2');
+        svg.appendChild(path);
+
+        // Add text
+        const textAngle = startAngle + anglePerSegment / 2;
+        const textAngleRad = (textAngle - 90) * Math.PI / 180;
+        const textRadius = radius * 0.7;
+        const textX = centerX + textRadius * Math.cos(textAngleRad);
+        const textY = centerY + textRadius * Math.sin(textAngleRad);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', textX);
+        text.setAttribute('y', textY);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('fill', '#ffffff');
+        text.setAttribute('font-size', '16');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('transform', `rotate(${textAngle}, ${textX}, ${textY})`);
+        text.textContent = number > 0 ? `+${number}` : number.toString();
+        svg.appendChild(text);
+    }
+}
+
+// Spin button handler
+document.getElementById('spin-button').addEventListener('click', function () {
+    this.disabled = true;
+    this.textContent = 'Spinning...';
+
+    // Random spin (3-8 full rotations plus random position)
+    const spins = 3 + Math.random() * 5;
+    const finalAngle = Math.random() * 360;
+    const totalRotation = spins * 360 + finalAngle;
+
+    // Calculate which segment we land on
+    const normalizedAngle = (360 - (finalAngle % 360)) % 360;
+    const segmentIndex = Math.floor(normalizedAngle / (360 / wheelNumbers.length));
+    selectedNumber = wheelNumbers[segmentIndex];
+
+    // Apply spin animation
+    const wheelSvg = document.getElementById('wheelSvg');
+    wheelSvg.style.setProperty('--spin-degrees', `${totalRotation}deg`);
+    wheelSvg.classList.add('spin-animation');
+
+    // Show result after animation
+    setTimeout(() => {
+        document.getElementById('landedNumber').textContent = selectedNumber > 0 ? `+${selectedNumber}` : selectedNumber;
+        document.getElementById('spinResult').classList.remove('hidden');
+
+        // Show continue button
+        setTimeout(() => {
+            showResults();
+        }, 1500);
+    }, 3000);
+});
 
 // Restart the quiz
 restartButton.addEventListener('click', () => {
