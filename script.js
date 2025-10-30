@@ -54,7 +54,7 @@ let totalScore = 0;
 let maxPossibleScore = 0;
 let isSpinning = false;
 let selectedValue = 0;
-const baseAge = 75;
+const baseAge = 0;
 
 // DOM Elements
 const progressBar = document.getElementById('progress');
@@ -418,10 +418,10 @@ function createWheel(healthPercentage, currentAge = 60) {
         // Determine color based on number value
         const number = num;
         let color;
-        if (number >= 10) color = '#10b981'; // green-500
-        else if (number >= 5) color = '#84cc16'; // lime-500
-        else if (number >= 0) color = '#eab308'; // yellow-500
-        else if (number >= -5) color = '#f97316'; // orange-500
+        if (number >= 85) color = '#10b981'; // green-500
+        else if (number >= 77) color = '#84cc16'; // lime-500
+        else if (number >= 70) color = '#eab308'; // yellow-500
+        else if (number >= 65) color = '#f97316'; // orange-500
         else color = '#ef4444'; // red-500
 
         // Create segment path
