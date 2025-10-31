@@ -165,6 +165,22 @@ function showWheel() {
     createWheel(healthPercentage);
 }
 
+function shuffle(array) {
+    let currentIndex = array.length;
+
+    // While there remain elements to shuffle...
+    while (currentIndex != 0) {
+
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+}
+
 function getRandomAgeNumbers(healthPercentage, currentAge) {
     // Define wheel sections based on health score
     var baseAge = 75;
@@ -179,17 +195,19 @@ function getRandomAgeNumbers(healthPercentage, currentAge) {
         offsets = [-1, 0, +2, +4, +6, +8, +10, +15];
     } else if (healthPercentage >= 60) {
         // Healthy - mix of positive and some negative, with median = 1
-        offsets = [-3, -2, 0, +1, +3, +4, +5, +7];
+        offsets = [-4, -2, 0, +1, +3, +5, +8, +10];
     } else if (healthPercentage >= 40) {
         // Average - balanced mix, with median = 1
-        offsets = [-4, -3, -1, 0, +2, +3, +5, +6];
+        offsets = [-5, -3, -1, 0, +2, +3, +4, +6];
     } else if (healthPercentage >= 20) {
         // Unhealthy - more negative values, with median < 1
-        offsets = [-5, -4, -3, -2, 0, +1, +2, +3];
+        offsets = [-6, -4, -3, -2, 0, +2, +3, +5];
     } else {
         // Very unhealthy - mostly negative values, with median < 0
-        offsets = [-7, -6, -5, -4, -3, -2, +1, +2];
+        offsets = [-9, -7, -6, -5, -3, -2, +1, +2];
     }
+
+    shuffle(offsets);
 
     var numbers = offsets.map(offset => Math.max(offset + baseAge, currentAge));
 
@@ -332,7 +350,7 @@ function showResults() {
             "With habits like these, you might just outlive your houseplants!",
             "Keep going! Your future self is counting on you to remember where you left your keys at 70.",
             `Keep going! At this rate, you'll be the one giving health advice at ${roundDownToMultipleOf5(predictedAge - 5)}!`,
-            `Sure, your lifestyle isn't picture-perfect, but it's real — and that's exactly why you'll be smiling strong at ${roundDownToMultipleOf5(predictedAge-10)}.`
+            `Sure, your lifestyle isn't picture-perfect, but it's real — and that's exactly why you'll be smiling strong at ${roundDownToMultipleOf5(predictedAge - 10)}.`
         ];
         healthAdvice.textContent = sentences[Math.floor(Math.random() * sentences.length)];
     } else {
@@ -415,6 +433,13 @@ function createConfetti() {
     }
 }
 
+function linearInterpolate(x1, x2, y1, y2, x3) {
+    if (x1 === x2) {
+        throw new Error("x1 and x2 cannot be the same (division by zero).");
+    }
+    return y1 + (y2 - y1) * ((x3 - x1) / (x2 - x1));
+}
+
 function interpolateColor(color1, color2, k) {
     // Ensure k is between 0 and 100
     k = Math.max(0, Math.min(100, k));
@@ -486,7 +511,13 @@ function createWheel(healthPercentage, currentAge = 60) {
         // else if (number >= 70) color = '#eab308'; // yellow-500
         // else if (number >= 65) color = '#f97316'; // orange-500
         // else color = '#ef4444'; // red-500
-        let color = interpolateColor('#ef4444', '#10b981', (number - currentAge + 7) * 10);
+        let color = interpolateColor('#f9c378ff', '#24bb02', (() => {
+            ageMin = 60;
+            ageMax = 80;
+            if (number >= ageMax) return 100;
+            if (number <= ageMin) return 0;
+            return linearInterpolate(ageMin, ageMax, 0, 100, number);
+        })());
 
         // Create segment path
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -512,7 +543,7 @@ function createWheel(healthPercentage, currentAge = 60) {
         text.setAttribute('font-size', '16');
         text.setAttribute('font-weight', 'bold');
         text.setAttribute('transform', `rotate(${textAngle}, ${textX}, ${textY})`);
-        text.textContent = number > 0 ? `+${number}` : number.toString();
+        text.textContent = number > 0 ? `${number}` : number.toString();
         svg.appendChild(text);
     })
 }
