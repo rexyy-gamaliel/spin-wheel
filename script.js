@@ -305,16 +305,44 @@ function showResults() {
     healthScoreValue.textContent = `${healthPercentage}%`;
 
     // Set health advice based on score
-    if (healthPercentage >= 80) {
-        healthAdvice.textContent = "Excellent lifestyle choices! Keep up the great work.";
-    } else if (healthPercentage >= 60) {
-        healthAdvice.textContent = "Good habits overall. Small improvements could make a big difference.";
-    } else if (healthPercentage >= 40) {
-        healthAdvice.textContent = "Consider making some lifestyle changes to improve your health.";
-    } else if (healthPercentage >= 20) {
-        healthAdvice.textContent = "Your current habits may be impacting your health. Consider consulting a healthcare professional.";
+    // if (healthPercentage >= 80) {
+    //     healthAdvice.textContent = "Excellent lifestyle choices! Keep up the great work.";
+    // } else if (healthPercentage >= 60) {
+    //     healthAdvice.textContent = "Good habits overall. Small improvements could make a big difference.";
+    // } else if (healthPercentage >= 40) {
+    //     healthAdvice.textContent = "Consider making some lifestyle changes to improve your health.";
+    // } else if (healthPercentage >= 20) {
+    //     healthAdvice.textContent = "Your current habits may be impacting your health. Consider consulting a healthcare professional.";
+    // } else {
+    //     healthAdvice.textContent = "Your lifestyle choices need significant improvement. Please consider seeking professional health advice.";
+    // }
+
+    let roundDownToMultipleOf5 = (n) => Math.floor(n / 5) * 5;
+
+    if (healthPercentage >= 75) {
+        let sentences = [
+            "If your lifestyle keeps up, your doctor's going to start asking you for advice when you hit 70!",
+            `At this rate, you'll still be doing yoga at age ${roundDownToMultipleOf5(predictedAge - 5)} while the rest of us are negotiating with our knees!`,
+            "Keep it up and you'll be the oldest person to ever try skydiving!",
+            "Your lifestyle is so good, even your future self is sending you thank-you notes!"
+        ];
+        healthAdvice.textContent = sentences[Math.floor(Math.random() * sentences.length)];
+    } else if (healthPercentage >= 50) {
+        let sentences = [
+            "With habits like these, you might just outlive your houseplants!",
+            "Keep going! Your future self is counting on you to remember where you left your keys at 70.",
+            `Keep going! At this rate, you'll be the one giving health advice at ${roundDownToMultipleOf5(predictedAge - 5)}!`,
+            `Sure, your lifestyle isn't picture-perfect, but it's real — and that's exactly why you'll be smiling strong at ${roundDownToMultipleOf5(predictedAge-10)}.`
+        ];
+        healthAdvice.textContent = sentences[Math.floor(Math.random() * sentences.length)];
     } else {
-        healthAdvice.textContent = "Your lifestyle choices need significant improvement. Please consider seeking professional health advice.";
+        let sentences = [
+            "At this rate, your future self will be asking you for a refund on your life choices!",
+            "Your body's holding up like an old laptop — still running somehow, but maybe a few updates before retirement would help",
+            `You don't need to be perfect — just one healthy choice a day and ${predictedAge} will turn into a checkpoint, not a finish line.`,
+            `You've already made it this far living on pure chaos; imagine what you could do if you gave your body a little backup before ${roundDownToMultipleOf5(predictedAge - 10)}!`,
+        ];
+        healthAdvice.textContent = sentences[Math.floor(Math.random() * sentences.length)];
     }
 
     let averageLifespan = 75;
