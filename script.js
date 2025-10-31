@@ -349,11 +349,11 @@ function showResults() {
     let lifespanDiff = predictedAge - averageLifespan;
     // Set age message
     if (lifespanDiff > 0) {
-        ageMessageElement.textContent = `Congratulations! Your lifestyle choices may add ${selectedValue} years to the average lifespan.`;
+        ageMessageElement.textContent = `Congratulations! Your lifestyle choices may add several years to the average lifespan.`;
         ageMessageElement.className = "text-green-600 mb-6";
         createConfetti();
     } else if (lifespanDiff < 0) {
-        ageMessageElement.textContent = `Your current lifestyle choices may reduce your lifespan by ${Math.abs(selectedValue)} years from the average.`;
+        ageMessageElement.textContent = `Your current lifestyle choices may reduce your lifespan by several years from the average.`;
         ageMessageElement.className = "text-red-600 mb-6";
     } else {
         ageMessageElement.textContent = "Your lifestyle choices align with the average lifespan expectancy.";
