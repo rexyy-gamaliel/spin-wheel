@@ -25,7 +25,7 @@ const questions = [
             { text: "7-9 hours", score: 10 },
             { text: "6-7 hours", score: 7 },
             { text: "5-6 hours", score: 4 },
-            { text: "Less than 5 hours or more than 9 hours", score: 1 }
+            { text: "Less than 5 hours", score: 1 }
         ]
     },
     {
@@ -192,7 +192,7 @@ function getRandomAgeNumbers(healthPercentage, currentAge) {
     let offsets = [];
     if (healthPercentage >= 80) {
         // Very healthy - mostly positive values, with median > 1
-        offsets = [-1, 0, +2, +4, +6, +8, +10, +15];
+        offsets = [-1, 0, +2, +4, +7, +9, +12, +15];
     } else if (healthPercentage >= 60) {
         // Healthy - mix of positive and some negative, with median = 1
         offsets = [-4, -2, 0, +1, +3, +5, +8, +10];
@@ -204,7 +204,7 @@ function getRandomAgeNumbers(healthPercentage, currentAge) {
         offsets = [-6, -4, -3, -2, 0, +2, +3, +5];
     } else {
         // Very unhealthy - mostly negative values, with median < 0
-        offsets = [-9, -7, -6, -5, -3, -2, +1, +2];
+        offsets = [-8, -6, -5, -3, -1, 0, +1, +3];
     }
 
     shuffle(offsets);
@@ -371,7 +371,7 @@ function showResults() {
         ageMessageElement.className = "text-green-600 mb-6";
         createConfetti();
     } else if (lifespanDiff < 0) {
-        ageMessageElement.textContent = `Your current lifestyle choices may reduce your lifespan by several years from the average.`;
+        ageMessageElement.textContent = `Your current lifestyle choices may reduce your lifespan by several years from the average lifespan.`;
         ageMessageElement.className = "text-red-600 mb-6";
     } else {
         ageMessageElement.textContent = "Your lifestyle choices align with the average lifespan expectancy.";
@@ -511,7 +511,7 @@ function createWheel(healthPercentage, currentAge = 60) {
         // else if (number >= 70) color = '#eab308'; // yellow-500
         // else if (number >= 65) color = '#f97316'; // orange-500
         // else color = '#ef4444'; // red-500
-        let color = interpolateColor('#f9c378ff', '#24bb02', (() => {
+        let color = interpolateColor('#f7f978ff', '#24bb02', (() => {
             ageMin = 60;
             ageMax = 80;
             if (number >= ageMax) return 100;
