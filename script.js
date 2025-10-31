@@ -55,6 +55,7 @@ let maxPossibleScore = 0;
 let isSpinning = false;
 let selectedValue = 0;
 const baseAge = 0;
+let lastRotation = 0;
 
 // DOM Elements
 const progressBar = document.getElementById('progress');
@@ -316,12 +317,14 @@ function showResults() {
         healthAdvice.textContent = "Your lifestyle choices need significant improvement. Please consider seeking professional health advice.";
     }
 
+    let averageLifespan = 75;
+    let lifespanDiff = predictedAge - averageLifespan;
     // Set age message
-    if (selectedValue > 0) {
+    if (lifespanDiff > 0) {
         ageMessageElement.textContent = `Congratulations! Your lifestyle choices may add ${selectedValue} years to the average lifespan.`;
         ageMessageElement.className = "text-green-600 mb-6";
         createConfetti();
-    } else if (selectedValue < 0) {
+    } else if (lifespanDiff < 0) {
         ageMessageElement.textContent = `Your current lifestyle choices may reduce your lifespan by ${Math.abs(selectedValue)} years from the average.`;
         ageMessageElement.className = "text-red-600 mb-6";
     } else {
@@ -384,6 +387,38 @@ function createConfetti() {
     }
 }
 
+function interpolateColor(color1, color2, k) {
+    // Ensure k is between 0 and 100
+    k = Math.max(0, Math.min(100, k));
+
+    // Convert hex color to RGB components
+    const c1 = parseInt(color1.slice(1), 16);
+    const c2 = parseInt(color2.slice(1), 16);
+
+    // Extract RGB from hex using bit shifts
+    const r1 = (c1 >> 16) & 0xff;
+    const g1 = (c1 >> 8) & 0xff;
+    const b1 = c1 & 0xff;
+
+    const r2 = (c2 >> 16) & 0xff;
+    const g2 = (c2 >> 8) & 0xff;
+    const b2 = c2 & 0xff;
+
+    // Compute interpolation factor (0–1)
+    const t = k / 100;
+
+    // Linear interpolation for each channel
+    const r = Math.round(r1 + (r2 - r1) * t);
+    const g = Math.round(g1 + (g2 - g1) * t);
+    const b = Math.round(b1 + (b2 - b1) * t);
+
+    // Convert back to hex and return
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b)
+        .toString(16)
+        .slice(1)}`;
+}
+
+
 function createWheel(healthPercentage, currentAge = 60) {
     const svg = document.getElementById('wheelSvg');
     const centerX = 150;
@@ -417,12 +452,13 @@ function createWheel(healthPercentage, currentAge = 60) {
 
         // Determine color based on number value
         const number = num;
-        let color;
-        if (number >= 85) color = '#10b981'; // green-500
-        else if (number >= 77) color = '#84cc16'; // lime-500
-        else if (number >= 70) color = '#eab308'; // yellow-500
-        else if (number >= 65) color = '#f97316'; // orange-500
-        else color = '#ef4444'; // red-500
+        // let color;
+        // if (number >= 85) color = '#10b981'; // green-500
+        // else if (number >= 77) color = '#84cc16'; // lime-500
+        // else if (number >= 70) color = '#eab308'; // yellow-500
+        // else if (number >= 65) color = '#f97316'; // orange-500
+        // else color = '#ef4444'; // red-500
+        let color = interpolateColor('#ef4444', '#10b981', (number - currentAge + 7) * 10);
 
         // Create segment path
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -472,6 +508,7 @@ document.getElementById('spin-button').addEventListener('click', function () {
     const spins = 3 + Math.random() * 5;
     const finalAngle = Math.random() * 360;
     const totalRotation = spins * 360 + finalAngle;
+    lastRotation = totalRotation;
 
     // Calculate which segment we land on
     const normalizedAngle = (360 - (finalAngle % 360)) % 360;
@@ -528,7 +565,9 @@ restartButton.addEventListener('click', () => {
     spinButton.disabled = false;
     spinButton.textContent = 'SPIN THE WHEEL';
     spinButton.classList.remove('opacity-50');
-    wheel.style.transform = 'rotate(0deg)';
+    // wheelSvg.style.transform = 'rotate(0deg)';
+    // wheelSvg.style.setProperty('--spin-degrees', `${-1 * lastRotation}deg`);
+    wheelSvg.classList.remove('spin-animation');
     initQuiz();
 });
 
